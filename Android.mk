@@ -16,8 +16,8 @@
 
 LOCAL_PATH := $(call my-dir)
 
-ifneq ($(filter g3 d850 d851 d852 d855 ls990 vs985, $(TARGET_DEVICE)),)
-
+ifneq ($(filter g3 d850 d851 d852 d855 ls990 vs985 f400s,$(TARGET_DEVICE)),)
+ 
 include $(call all-makefiles-under,$(LOCAL_PATH))
 
 include $(CLEAR_VARS)
@@ -26,6 +26,20 @@ define vfatfilename
 $(foreach f,$(1),$(shell echo $(f) | \
     awk 'BEGIN { FS="."; } { printf("%s.%s", substr($$1,1,8), $$2); }'))
 endef
+
+
+WCNSS_IMAGES := \
+		wcnss.b00 wcnss.b01 wcnss.b02 wcnss.b04 wcnss.b06 \
+		wcnss.b07 wcnss.b08 wcnss.b09 wcnss.mdt
+
+WCNSS_SYMLINKS := $(addprefix $(TARGET_OUT_VENDOR)/firmware/,$(notdir $(WCNSS_IMAGES)))
+$(WCNSS_SYMLINKS): $(LOCAL_INSTALLED_MODULE)
+	@echo "WCNSS firmware link: $@"
+	@mkdir -p $(dir $@)
+	@rm -rf $@
+	$(hide) ln -sf /firmware/image/$(notdir $@) $@
+
+ALL_DEFAULT_INSTALLED_MODULES += $(WCNSS_SYMLINKS)
 
 DXHDCP2_IMAGES := \
     dxhdcp2.b00 dxhdcp2.b01 dxhdcp2.b02 dxhdcp2.b03 dxhdcp2.mdt
